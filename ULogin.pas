@@ -71,6 +71,7 @@ begin
     strDataBaseName := IniFile.ReadString('DataBase','DataBaseName','');
     strServerName   := IniFile.ReadString('Server','ServerName','');
     debug_user      := IniFile.ReadString('Logger','User','');
+    intDefNDS       := IniFile.ReadInteger('ndsType','Value',0);
 
     with frmLogin do
     begin

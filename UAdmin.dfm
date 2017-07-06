@@ -24,7 +24,7 @@ object frmAdmin: TfrmAdmin
     Width = 764
     Height = 423
     Cursor = crHandPoint
-    ActivePage = TabSheet5
+    ActivePage = TabSheet1
     Align = alTop
     Images = ImageList1
     MultiLine = True
@@ -816,6 +816,10 @@ object frmAdmin: TfrmAdmin
     object TabSheet3: TTabSheet
       Caption = ' '#1043#1056#1059#1055#1055#1067' '
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Splitter2: TSplitter
         Left = 0
         Top = 159
@@ -1469,6 +1473,10 @@ object frmAdmin: TfrmAdmin
     object TabSheet2: TTabSheet
       Caption = ' '#1055#1056#1054#1043#1056#1040#1052#1052#1067' '
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel4: TPanel
         Left = 0
         Top = 351
@@ -1562,6 +1570,10 @@ object frmAdmin: TfrmAdmin
     object TabSheet4: TTabSheet
       Caption = ' '#1044#1054#1057#1058#1059#1055' '#1050' '#1050#1040#1057#1057#1040#1052' '
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel17: TPanel
         Left = 0
         Top = 0
@@ -2083,7 +2095,7 @@ object frmAdmin: TfrmAdmin
     Left = 632
     Top = 152
     Bitmap = {
-      494C0101050020006C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010105002000700010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

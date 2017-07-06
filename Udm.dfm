@@ -8,7 +8,7 @@ object dm: Tdm
     Options.Direct = True
     Username = 'creator'
     Password = '123456'
-    Server = 'ROZNICA:1521:orcl'
+    Server = 'KLEPOV:1521:STARNEW'
     LoginPrompt = False
     AfterConnect = OraSessionAfterConnect
     HomeName = 'OraClient11g_home1'
@@ -51,9 +51,22 @@ object dm: Tdm
     Top = 96
     ParamData = <
       item
-        DataType = ftUnknown
+        DataType = ftCursor
         Name = 'cursor_'
+        Value = 'Object'
       end>
+    object cdsSettingsDB_USER: TStringField
+      FieldName = 'DB_USER'
+      Size = 256
+    end
+    object cdsSettingsSTG_KEY: TStringField
+      FieldName = 'STG_KEY'
+      Size = 256
+    end
+    object cdsSettingsSTG_VALUE: TStringField
+      FieldName = 'STG_VALUE'
+      Size = 256
+    end
   end
   object ImgList_32: TcxImageList
     Height = 32
@@ -61,7 +74,7 @@ object dm: Tdm
     Left = 40
     Top = 96
     Bitmap = {
-      494C010127002C00B40020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010127002C00C00020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004001000001002000000000000080
       0200000000000000000000000000000000000000000000000000000000000000
       000000000000000000000101011A0B0B0B743B3D3DB4777777D5838383DA5152
@@ -5354,7 +5367,7 @@ object dm: Tdm
     Left = 40
     Top = 153
     Bitmap = {
-      494C01013C004800700018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01013C0048007C0018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000008001000001002000000000000040
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

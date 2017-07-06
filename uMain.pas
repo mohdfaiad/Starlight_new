@@ -95,6 +95,7 @@ type
     mmiSpez: TMenuItem;
     mmiSales: TMenuItem;
     mmiTrans: TMenuItem;
+    mmiKassModule: TMenuItem;
     procedure actAboutExecute(Sender: TObject);
     procedure mnNSI_CurrencyClick(Sender: TObject);
     procedure mmiSettingsClick(Sender: TObject);
@@ -123,6 +124,7 @@ type
     procedure mmiTransClick(Sender: TObject);
     procedure mmiUndoClick(Sender: TObject);
     procedure miNomen_NomClick(Sender: TObject);
+    procedure mmiKassModuleClick(Sender: TObject);
   private
     { Private declarations }
     porasessStarLight: POraSession;
@@ -135,7 +137,8 @@ var
 
 implementation
 
-uses info_f, UNSICurrency, USettings, UAdmin,  URegistration, UTrans, Urefbooks, uNomenclature;
+uses info_f, UNSICurrency, USettings, UAdmin,  URegistration, UTrans, Urefbooks, uNomenclature,
+  UCashModule;
 
 {$R *.dfm}
 
@@ -177,10 +180,14 @@ begin
   mmiZakaz.Enabled        := DM.cdsRules.Locate('ID_PROGRAMS',8,[]);
   mmiRazZakaz.Enabled     := DM.cdsRules.Locate('ID_PROGRAMS',18,[]);
   mmiFito.Enabled         := DM.cdsRules.Locate('ID_PROGRAMS',21,[]);
+
+  //Бухгалтерия
   mmiKasses.Enabled       := DM.cdsRules.Locate('ID_PROGRAMS',11,[]);
   mmiKasSvod.Enabled      := DM.cdsRules.Locate('ID_PROGRAMS',12,[]);
-  miByx.Enabled           := DM.cdsRules.Locate('ID_PROGRAMS',14,[]);
+  mmiKassModule.Enabled   := DM.cdsRules.Locate('ID_PROGRAMS',11,[]);
+  mmiByx.Enabled          := DM.cdsRules.Locate('ID_PROGRAMS',14,[]);
   mmiPretenz.Enabled      := DM.cdsRules.Locate('ID_PROGRAMS',10,[]);
+
   miZP.Enabled            := DM.cdsRules.Locate('ID_PROGRAMS',16,[]);
   mmiSales.Enabled        := DM.cdsRules.Locate('ID_PROGRAMS',20,[]);
   mnNSI_Currency.Enabled  := DM.cdsRules.Locate('ID_PROGRAMS',13,[]);
@@ -270,6 +277,20 @@ begin
 
 end;
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// BOF - Бухгалтерия
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TfrmMain.mmiKassModuleClick(Sender: TObject);
+begin
+  frmCashModule.MainFormShow;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+// EOF - Бухгалтерия
+////////////////////////////////////////////////////////////////////////////////
 
 
 

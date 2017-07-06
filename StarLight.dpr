@@ -23,7 +23,12 @@ uses
   UEditAdmins in 'UEditAdmins.pas' {frmEditAdmins},
   Unomenclature in 'Unomenclature.pas' {frmNomenclature},
   UEditNom in 'UEditNom.pas' {frmEditNom},
-  UEditSubNom in 'UEditSubNom.pas' {frmEditSubNom};
+  UEditSubNom in 'UEditSubNom.pas' {frmEditSubNom},
+  UCashModule in 'UCashModule.pas' {frmCashModule},
+  UCashModuleEditor in 'UCashModuleEditor.pas' {frmCashModuleEditor},
+  UCashModuleInfo in 'UCashModuleInfo.pas' {frmCashModuleInfo},
+  FprnM1C_TLB in 'FprnM1C_TLB.pas',
+  UCashModuleInOut in 'UCashModuleInOut.pas' {frmCashModuleInOut};
 
 {$R *.res}
 

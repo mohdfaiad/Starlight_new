@@ -99,6 +99,10 @@ object frmMain: TfrmMain
         Caption = #1050#1072#1089#1089#1086#1074#1099#1081' '#1089#1074#1086#1076
         ShortCut = 16450
       end
+      object mmiKassModule: TMenuItem
+        Caption = #1050#1072#1089#1089#1086#1074#1099#1081' '#1084#1086#1076#1091#1083#1100
+        OnClick = mmiKassModuleClick
+      end
       object mmiByx: TMenuItem
         Caption = #1041#1091#1093#1075#1072#1083#1090#1077#1088#1080#1103
       end

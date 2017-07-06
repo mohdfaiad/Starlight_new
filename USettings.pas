@@ -14,8 +14,8 @@ type
     tshMain: TcxTabSheet;
     alSettings: TActionList;
     cbOtdel: TcxImageComboBox;
-    cxLabel1: TcxLabel;
-    cxLabel2: TcxLabel;
+    lblFont: TcxLabel;
+    lblOtdel: TcxLabel;
     aEnter: TAction;
     aClose: TAction;
     cbFont: TcxComboBox;
@@ -23,6 +23,9 @@ type
     btnSave: TcxButton;
     btnClose: TcxButton;
     Pnltop: TPanel;
+    tshCashes: TcxTabSheet;
+    lblCashierFIO: TcxLabel;
+    edCashierFIO: TcxTextEdit;
     procedure aCloseExecute(Sender: TObject);
     procedure aEnterExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -67,12 +70,15 @@ end;
 //пишу значени€ шрифта и отдела в Ѕƒ и закр.форму
 procedure TfrmSettings.aEnterExecute(Sender: TObject);
 var
-  p_key: array [1..2] of string;
-  p_val: array [1..2] of integer;
+  p_key: array [1..3] of string;
+  p_val: array [1..3] of string;
   i: integer;
 begin
+  edCashierFIO.PostEditValue;
+
   p_key[1] := 'FontSize';    p_val[1] := cbFont.EditValue;
   p_key[2] := 'Department';  p_val[2] := cbOtdel.EditValue;
+  p_key[3] := 'CashierFIO';  p_val[3] := VarToStr(edCashierFIO.EditValue);
 
   dm.cdsSQL.Close;
   dm.cdsSQL.SQL.clear;
@@ -81,11 +87,11 @@ begin
   //оказалось save_user_setting уже обрабатывает - что за юзер и т.д., поэтому лишнее убираю:
   for i := 1 to length(p_key) do
   begin
-    if (cbFont.EditValue <> intDefFont) or (cbOtdel.EditValue <> intDefDept) then begin
+    //if (cbFont.EditValue <> intDefFont) or (cbOtdel.EditValue <> intDefDept) then begin
       dm.cdsSQL.ParamByName('p_key').value := p_key[i];
       dm.cdsSQL.ParamByName('p_val').value := p_val[i];
       dm.cdsSQL.execute;
-    end;
+    //end;
   end;
 
   dm.OraSession.Commit;
@@ -109,8 +115,11 @@ end;
 procedure TfrmSettings.FormShow(Sender: TObject);
 begin
   //заполн€ю комбобоксы настройками, полученными из бд при старте проги:
+  pcSettings.ActivePageIndex := 0;
   cbFont.EditValue  := intDefFont;
   cbOtdel.EditValue := intDefDept;
+  if DM.cdsSettings.Locate('STG_KEY','CashierFIO',[]) then
+    edCashierFIO.EditValue := DM.cdsSettingsSTG_VALUE.AsString;
 end;
 
 end.

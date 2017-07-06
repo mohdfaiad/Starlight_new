@@ -3030,7 +3030,6 @@ object frmLogin: TfrmLogin
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      Text = 'EVA'
       OnChange = edLoginChange
     end
     object edPass: TMaskEdit
@@ -3047,7 +3046,6 @@ object frmLogin: TfrmLogin
       ParentFont = False
       PasswordChar = '*'
       TabOrder = 1
-      Text = '123'
       OnChange = edPassChange
     end
     object btnOk: TcxButton

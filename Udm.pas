@@ -8,6 +8,14 @@ uses
 
 
 type
+  TUserInfo = record
+    user_id:integer;
+    user_nick:string;
+    user_fio:string;
+    user_short_name:string;
+  end;
+
+type
   Tdm = class(TDataModule)
     OraSession: TOraSession;
     cdsOffices: TOraQuery;
@@ -25,6 +33,9 @@ type
     cdsRulesC_PRINT: TFloatField;
     cdsRulesC_ADDIT: TFloatField;
     SaveDialogXLS: TSaveDialog;
+    cdsSettingsDB_USER: TStringField;
+    cdsSettingsSTG_KEY: TStringField;
+    cdsSettingsSTG_VALUE: TStringField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure OraSessionAfterConnect(Sender: TObject);
@@ -36,6 +47,7 @@ type
    { id_office: integer;
     CUR_DEPT_ID: integer;
     CUR_DEPT_NAME: string;}
+    UserInfo: TUserInfo;
     procedure MakeExportToExcel(grid: TcxGrid);
   end;
 
@@ -56,6 +68,8 @@ var
   intDefFont  :Integer;         // Ўрифт по умолчанию
   intDefDept  :Integer;         // ќтдел по умолчанию
   intDefOffice:Integer;         // ќфис по умолчанию
+  intDefNDS   :Integer;
+  //intUserID   :Integer;         // ID пользовател€
 
 implementation
 
@@ -126,13 +140,25 @@ end;
 
 procedure Tdm.DataModuleDestroy(Sender: TObject);
 begin
- OraSession.Close;
+  OraSession.Close;
 end;
 
 
 procedure Tdm.OraSessionAfterConnect(Sender: TObject);
 begin
   intDefOffice := GetOfficeID;
+
+  cdsSQL.Close;
+  cdsSQL.SQL.Clear;
+  cdsSQL.SQL.Add('select substr(fio,1,instr(fio,'' '')-1)||'' ''||substr(fio,instr(fio,'' '')+1,1)||''.''||substr(fio,instr(fio,'' '',1,2)+1,1) as short_name, a.*');
+  cdsSQL.SQL.Add('from ( select ID_CLIENTS, nick, replace(fio, ''  '', '' '') as fio from clients where login = '''+orasession.Username+''' and ID_OFFICE = const_office ) a');
+
+  cdsSQL.Open;
+  UserInfo.user_id    := cdsSQL.FieldByName('ID_CLIENTS').AsInteger;
+  UserInfo.user_nick  := cdsSQL.FieldByName('nick').AsString;
+  UserInfo.user_fio   := cdsSQL.FieldByName('fio').AsString;
+  UserInfo.user_short_name := cdsSQL.FieldByName('short_name').AsString;
+  cdsSQL.Close;
 
   // все настройки сохран€ю в переменные и не закрываю cdssettings
   cdssettings.ParamByName('cursor_').AsCursor;

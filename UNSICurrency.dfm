@@ -5,7 +5,11 @@ object frmNSICurreny: TfrmNSICurreny
   ClientHeight = 482
   ClientWidth = 773
   Color = clBtnFace
-  ParentFont = True
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Segoe UI Semibold'
+  Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
   Visible = True

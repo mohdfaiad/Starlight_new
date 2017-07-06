@@ -9,7 +9,7 @@ object frmSettings: TfrmSettings
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Name = 'Segoe UI Semibold'
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
@@ -26,7 +26,6 @@ object frmSettings: TfrmSettings
     Height = 40
     Align = alBottom
     TabOrder = 0
-    ExplicitWidth = 628
     DesignSize = (
       570
       40)
@@ -35,6 +34,7 @@ object frmSettings: TfrmSettings
       Top = 6
       Width = 133
       Height = 27
+      Cursor = crHandPoint
       Action = aEnter
       Anchors = [akRight, akBottom]
       Font.Charset = DEFAULT_CHARSET
@@ -51,6 +51,7 @@ object frmSettings: TfrmSettings
       Top = 6
       Width = 133
       Height = 27
+      Cursor = crHandPoint
       Action = aClose
       Anchors = [akRight, akBottom]
       Cancel = True
@@ -71,23 +72,19 @@ object frmSettings: TfrmSettings
     Height = 221
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 628
-    ExplicitHeight = 211
     object pcSettings: TcxPageControl
       Left = 1
       Top = 1
       Width = 568
       Height = 219
-      ActivePage = tshMain
+      ActivePage = tshCashes
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 626
-      ExplicitHeight = 209
       ClientRectBottom = 219
       ClientRectRight = 568
       ClientRectTop = 24
       object tshMain: TcxTabSheet
-        Caption = #1054#1089#1085#1086#1074#1085#1099#1077
+        Caption = ' '#1054#1089#1085#1086#1074#1085#1099#1077' '
         Color = clBtnFace
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -97,8 +94,6 @@ object frmSettings: TfrmSettings
         ImageIndex = 0
         ParentColor = False
         ParentFont = False
-        ExplicitWidth = 626
-        ExplicitHeight = 185
         object cbOtdel: TcxImageComboBox
           Left = 24
           Top = 35
@@ -123,7 +118,7 @@ object frmSettings: TfrmSettings
           TabOrder = 0
           Width = 177
         end
-        object cxLabel1: TcxLabel
+        object lblFont: TcxLabel
           Left = 24
           Top = 14
           Caption = #1054#1090#1076#1077#1083' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102':'
@@ -135,7 +130,7 @@ object frmSettings: TfrmSettings
           Style.Font.Style = []
           Style.IsFontAssigned = True
         end
-        object cxLabel2: TcxLabel
+        object lblOtdel: TcxLabel
           Left = 24
           Top = 64
           Caption = #1056#1072#1079#1084#1077#1088' '#1096#1088#1080#1092#1090#1072':'
@@ -158,6 +153,35 @@ object frmSettings: TfrmSettings
             '12'
             '14')
           TabOrder = 3
+          Width = 177
+        end
+      end
+      object tshCashes: TcxTabSheet
+        Caption = ' '#1050#1072#1089#1089#1099' '
+        ImageIndex = 1
+        object lblCashierFIO: TcxLabel
+          Left = 24
+          Top = 14
+          Caption = #1060#1048#1054' '#1082#1072#1089#1089#1080#1088#1072' '#1076#1083#1103' '#1084#1086#1076#1091#1083#1103':'
+          ParentFont = False
+          Style.Font.Charset = DEFAULT_CHARSET
+          Style.Font.Color = clWindowText
+          Style.Font.Height = -12
+          Style.Font.Name = 'Segoe UI Semibold'
+          Style.Font.Style = []
+          Style.IsFontAssigned = True
+        end
+        object edCashierFIO: TcxTextEdit
+          Left = 24
+          Top = 39
+          ParentFont = False
+          Style.Font.Charset = DEFAULT_CHARSET
+          Style.Font.Color = clWindowText
+          Style.Font.Height = -12
+          Style.Font.Name = 'Segoe UI Semibold'
+          Style.Font.Style = []
+          Style.IsFontAssigned = True
+          TabOrder = 1
           Width = 177
         end
       end
