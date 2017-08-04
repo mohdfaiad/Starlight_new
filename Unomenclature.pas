@@ -800,7 +800,6 @@ end;
 
  //обновить
 procedure TfrmNomenclature.aRefreshExecute(Sender: TObject);
-  var id: integer;
 begin
   try
 
@@ -944,16 +943,12 @@ end;
 // Выгрузка синхронизации наоменклатуры в регионы
 procedure TfrmNomenclature.bbSyncNomenclatureClick(Sender: TObject);
 var sql_str: string;
-    res,ResText : Variant;
-    new_id, old_id, param_, s_id_, p_price: integer;
     F_CSV: TextFile;
 begin
 
 
   if MessageDlg('Создать экспортный файл номенклатуры для регионов?',  mtConfirmation, [mbOk, mbNo], 0) <> mrOk then
   Exit;
-
-  p_price := 0;
 
 
   if not DirectoryExists(path+'\OUT\'+VarToStr(CUR_DEPT_ID)) then
@@ -1310,8 +1305,6 @@ begin
 end;
 
 procedure TfrmNomenclature.CopyNExecute(Sender: TObject);
-VAR
-  N_ID, N_ID_OLD : Integer;
 begin
 {  NewD         := TNewD.Create(Application);
   try

@@ -122,12 +122,10 @@ type
     procedure mnNSI_SupplierClick(Sender: TObject);
     procedure mnNSI_pcsClick(Sender: TObject);
     procedure mmiTransClick(Sender: TObject);
-    procedure mmiUndoClick(Sender: TObject);
     procedure miNomen_NomClick(Sender: TObject);
     procedure mmiKassModuleClick(Sender: TObject);
   private
     { Private declarations }
-    porasessStarLight: POraSession;
   public
     { Public declarations }
   end;
@@ -272,10 +270,6 @@ begin
   frmNSICurreny.MainFormShow;
 end;
 
-procedure TfrmMain.mmiUndoClick(Sender: TObject);
-begin
-
-end;
 
 
 

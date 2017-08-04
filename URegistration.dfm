@@ -285,6 +285,10 @@ object frmRegistration: TfrmRegistration
     TabOrder = 5
     object TabSheet1: TTabSheet
       Caption = ' '#1057#1055#1048#1057#1054#1050' '#1050#1051#1048#1045#1053#1058#1054#1042' '
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -1369,6 +1373,10 @@ object frmRegistration: TfrmRegistration
     object TabSheet2: TTabSheet
       Caption = ' '#1057#1055#1048#1057#1054#1050' '#1043#1056#1059#1055#1055' '
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -1765,7 +1773,7 @@ object frmRegistration: TfrmRegistration
       object cxSplitter1: TcxSplitter
         Left = 0
         Top = 241
-        Width = 1070
+        Width = 8
         Height = 8
         HotZoneClassName = 'TcxMediaPlayer9Style'
         AlignSplitter = salTop
@@ -3568,7 +3576,7 @@ object frmRegistration: TfrmRegistration
     Left = 820
     Top = 125
     Bitmap = {
-      494C010104000900BC0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000900C00110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4545,7 +4553,7 @@ object frmRegistration: TfrmRegistration
     Left = 240
     Top = 328
     Bitmap = {
-      494C010127002C00AC0120002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010127002C00B00120002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004001000001002000000000000080
       0200000000000000000000000000000000000000000000000000000000000000
       000000000000000000000101011A0B0B0B743B3D3DB4777777D5838383DA5152

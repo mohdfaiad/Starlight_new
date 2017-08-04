@@ -255,6 +255,7 @@ Begin
         if Screen.Forms[j].FormStyle = fsmdichild then
           if Screen.Forms[j].tag = v_page then
             if (Screen.Forms[j].WindowState = wsMinimized) then Screen.Forms[j].WindowState := wsNormal;
+      result := false;
       exit; // на выход из функции - больше тут делать нечего
     end;
 
@@ -326,7 +327,6 @@ end;
 
 
 procedure TfrmRefbooks.aNewExecute(Sender: TObject);
- var id : variant;
 begin
   if (pcrefbooks.ActivePage.PageIndex < 4) and (intDefOffice > 1) then
   begin

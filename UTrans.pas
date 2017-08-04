@@ -103,7 +103,7 @@ type
     procedure aDeleteExecute(Sender: TObject);
   private
     { Private declarations }
-    p_read, p_edit, p_delete, p_print: boolean;
+    //p_read, p_edit, p_delete, p_print: boolean;
   public
     { Public declarations }
     id_office: integer;
@@ -122,7 +122,7 @@ uses umain, UDM, UHotKeys, uEditTrans;
 
 //!!! удалять - только из  status_z
 procedure TfrmTrans.aDeleteExecute(Sender: TObject);
- var stroka, stroka2 : string;
+ var stroka : string;
 begin
 try
 stroka:= grTransView.Controller.FocusedRow.Values[0];
@@ -234,7 +234,6 @@ begin
 end;
 
 procedure TfrmTrans.FormCreate(Sender: TObject);
-   var recUserRules : TUserRules;
 begin
  Application.CreateForm(TfrmEditTrans, frmEditTrans);
  grTrans.Font.Size := intDefFont;
@@ -330,6 +329,8 @@ Begin
   end
   else
     if (frmTrans.WindowState = wsMinimized) then frmTrans.WindowState := wsNormal;
+
+  result := true;
 end;
 
 

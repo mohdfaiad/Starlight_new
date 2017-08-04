@@ -36,6 +36,8 @@ type
     cdsSettingsDB_USER: TStringField;
     cdsSettingsSTG_KEY: TStringField;
     cdsSettingsSTG_VALUE: TStringField;
+    cds_rights_users: TOraQuery;
+    cds_rights_usersRIGHT_NAME: TStringField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure OraSessionAfterConnect(Sender: TObject);
@@ -177,6 +179,9 @@ begin
   // откроем таблицу с правами на пользователя
   cdsRules.ParamByName('pLogin').AsString   := OraSession.Username;
   cdsRules.Open;
+
+  cds_rights_users.ParamByName('v_user').AsInteger := UserInfo.user_id;
+  cds_rights_users.Open;
 end;
 
 

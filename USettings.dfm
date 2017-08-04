@@ -94,6 +94,9 @@ object frmSettings: TfrmSettings
         ImageIndex = 0
         ParentColor = False
         ParentFont = False
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object cbOtdel: TcxImageComboBox
           Left = 24
           Top = 35
@@ -159,6 +162,9 @@ object frmSettings: TfrmSettings
       object tshCashes: TcxTabSheet
         Caption = ' '#1050#1072#1089#1089#1099' '
         ImageIndex = 1
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object lblCashierFIO: TcxLabel
           Left = 24
           Top = 14

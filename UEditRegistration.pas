@@ -243,7 +243,6 @@ uses URegistration, udm, ueditsubreg;
 
 //новая логика
 procedure TfrmEditRegistration.TZ;
- var i:integer;
 begin
    frmRegistration.selq.close;
    frmRegistration.selq.SQL.Clear;
@@ -543,7 +542,6 @@ end;
 
 // кнопка Копировать данные
 procedure TfrmEditRegistration.BitBtn4Click(Sender: TObject);
- var ss:string;
 begin
   LabeledEdit10.Text := LabeledEdit2.Text;
 
@@ -586,7 +584,7 @@ end;
 
 // Клонирование данных о клиенте (НЕ РЕАЛИЗОВАНА ФОРМА)
 procedure TfrmEditRegistration.btnCloneClick(Sender: TObject);
-var ind: integer;
+//var ind: integer;
 begin
  { clientchoosForm := TclientchoosForm.Create(Application);
   try
@@ -721,7 +719,6 @@ end;
 // Генерация штрих кода
 procedure TfrmEditRegistration.SpeedButton1Click(Sender: TObject);
 var str: string;
-    sum1, sum2, allsum: integer;
 begin
   if ((ttype = 2) and ((Edit1.Text <> '0') OR (Edit1.Text <> ''))) then
   begin
@@ -820,7 +817,6 @@ end;
 
 
 procedure TfrmEditRegistration.SpeedButton7Click(Sender: TObject);
-  var ss:string;
 begin
   page:=2; // 2 - это вкладка "паспорт"
   frmeditsubreg.Caption  := 'Редактор :: паспорт';

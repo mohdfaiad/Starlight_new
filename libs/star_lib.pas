@@ -5,7 +5,8 @@ interface
 uses StdCtrls,Classes,Variants,SysUtils,Graphics,Dialogs, Ora, Forms, IniFiles,ExtCtrls, Controls,
      CheckLst,windows,ComCtrls, DB, DBGrids, cxImageComboBox, cxBarEditItem,
      cxCustomData, Clipbrd, cxDBData, cxGridLevel, cxGridCustomView, cxGridDBBandedTableView,
-     cxGridTableView, cxGridDBDataDefinitions, Shellapi, dbctrlseh;
+     cxGridTableView, cxGridDBTableView, cxGridDBDataDefinitions, Shellapi, dbctrlseh, menus,
+     cxGridExportLink;
 
 
 
@@ -66,6 +67,10 @@ type
 // Запомнить положение форм на экране
   procedure SaveFormState(aForm: TForm);
   procedure LoadFormState(aForm: TForm);
+// Настройка меню грида для управления списком колонок
+  procedure FillMenuList(grid_view: TcxGridDBTableView; mnFields: TMenuItem);
+  procedure RestoreGridSettings(grid_view: TcxGridDBTableView; path: string; key: string);
+  procedure SaveGridSettings(grid_view: TcxGridDBTableView; path: string; key: string);
 // Для shellexecute
   procedure CheckShell(hand: Thandle; st: pchar);
   function BoolToInt(inp : boolean) : integer;
@@ -95,6 +100,49 @@ const RussianWeekDays: array[1..7,0..1] of String =  //Просто массив русских наз
  ('Воскресенье','вс'));
 
 implementation
+
+{***************************************************************
+ * Процедура заполняет пункт меню списком доступных колонок    *
+ * отображаются только те, что имеют значение AlternateCaption *
+ * затем положение сохраняется в ini файле                     *
+ ***************************************************************}
+procedure FillMenuList(grid_view: TcxGridDBTableView; mnFields: TMenuItem);
+var i: integer;
+    newitem: TMenuItem;
+begin
+      for i := 0 to grid_view.ColumnCount - 1 do
+      begin
+        if grid_view.Columns[i].AlternateCaption <> '' then
+        begin
+        //if (grCashModuleV.Columns[i].Position.BandIndex > 0) and (grCashModuleV.Columns[i].Position.BandIndex < 3) then
+        //begin
+          newitem := tmenuitem.create(mnFields);
+          newitem.caption := grid_view.Columns[i].Caption;
+          newitem.tag := i;
+          newitem.Checked := grid_view.Columns[i].Visible;
+          //newitem.OnClick := FildsShow;
+          mnFields.insert(mnFields.count, newitem);
+        //end;
+        end;
+      end;
+end;
+
+
+procedure RestoreGridSettings(grid_view: TcxGridDBTableView; path: string; key: string);
+var AOptions: TcxGridStorageOptions;
+begin
+  AOptions := [];
+  grid_view.RestoreFromIniFile(path, False, False, AOptions, key);
+end;
+
+procedure SaveGridSettings(grid_view: TcxGridDBTableView; path: string; key: string);
+var AOptions: TcxGridStorageOptions;
+begin
+  AOptions := [];
+  grid_view.StoreToIniFile(path, True, AOptions, key)
+end;
+
+
 
 // Нарисуем окно с текстов для оброботки запросов и другой фигни
 // 2011-09-02
@@ -130,7 +178,7 @@ function  VarToInt(VarVar : Variant) : Integer;
 {***************************************************************
  * Функция предназначена для преобразования                    *
  * переменной типа Variant в integer                           *
- * в случае невозможности преобразования результат -1          * 
+ * в случае невозможности преобразования результат -1          *
  ***************************************************************}
 VAR
   VT : TVarType;

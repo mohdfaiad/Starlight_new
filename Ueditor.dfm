@@ -11,7 +11,7 @@ object frmeditor: Tfrmeditor
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Name = 'Segoe UI Semibold'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
@@ -24,6 +24,12 @@ object frmeditor: Tfrmeditor
     Width = 367
     Height = 40
     Align = alBottom
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
     DesignSize = (
       367
@@ -33,6 +39,7 @@ object frmeditor: Tfrmeditor
       Top = 7
       Width = 107
       Height = 25
+      Cursor = crHandPoint
       Action = aEnter
       Anchors = [akTop, akRight]
       Font.Charset = DEFAULT_CHARSET
@@ -49,6 +56,7 @@ object frmeditor: Tfrmeditor
       Top = 7
       Width = 107
       Height = 25
+      Cursor = crHandPoint
       Action = aClose
       Anchors = [akTop, akRight]
       Cancel = True
@@ -68,97 +76,61 @@ object frmeditor: Tfrmeditor
     Width = 367
     Height = 175
     Align = alClient
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
     object Lbl1: TLabel
       Left = 12
-      Top = 12
-      Width = 34
-      Height = 16
+      Top = 15
+      Width = 28
+      Height = 13
       Caption = #1044#1072#1090#1072':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object Lbl2: TLabel
       Left = 12
-      Top = 58
-      Width = 59
-      Height = 16
+      Top = 59
+      Width = 53
+      Height = 13
       Caption = #1050#1091#1088#1089' USD:'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object Lbl3: TLabel
       Left = 12
-      Top = 88
-      Width = 58
-      Height = 16
+      Top = 86
+      Width = 52
+      Height = 13
       Caption = #1050#1091#1088#1089' EUR:'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object Lbl4: TLabel
       Left = 12
       Top = 112
-      Width = 96
-      Height = 16
+      Width = 86
+      Height = 13
       Caption = #1050#1091#1088#1089' EUR '#1082' USD:'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object Lbl5: TLabel
       Left = 12
-      Top = 142
-      Width = 96
-      Height = 16
+      Top = 140
+      Width = 86
+      Height = 13
       Caption = #1050#1091#1088#1089' USD '#1082' EUR:'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object Lbl6: TLabel
       Left = 112
       Top = 39
-      Width = 35
-      Height = 16
+      Width = 33
+      Height = 13
       Caption = #1087#1086' '#1062#1041
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object Lbl7: TLabel
       Left = 238
       Top = 39
-      Width = 50
-      Height = 16
+      Width = 45
+      Height = 13
       Caption = #1074' '#1092#1080#1088#1084#1077
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object sbtn1: TSpeedButton
       Left = 207
@@ -204,7 +176,7 @@ object frmeditor: Tfrmeditor
     end
     object SBtn3: TSpeedButton
       Left = 335
-      Top = 110
+      Top = 111
       Width = 23
       Height = 22
       Glyph.Data = {
@@ -225,7 +197,7 @@ object frmeditor: Tfrmeditor
     end
     object SBtn4: TSpeedButton
       Left = 335
-      Top = 138
+      Top = 139
       Width = 23
       Height = 22
       Glyph.Data = {
@@ -291,7 +263,7 @@ object frmeditor: Tfrmeditor
     end
     object Ed5: TcxCurrencyEdit
       Left = 236
-      Top = 60
+      Top = 58
       Properties.DecimalPlaces = 5
       Properties.DisplayFormat = ',0.00000;-,0.00000'
       Properties.MaxLength = 10
@@ -300,7 +272,7 @@ object frmeditor: Tfrmeditor
     end
     object Ed6: TcxCurrencyEdit
       Left = 236
-      Top = 84
+      Top = 85
       Properties.DecimalPlaces = 5
       Properties.DisplayFormat = ',0.00000;-,0.00000'
       Properties.MaxLength = 10
@@ -309,7 +281,7 @@ object frmeditor: Tfrmeditor
     end
     object Ed7: TcxCurrencyEdit
       Left = 236
-      Top = 111
+      Top = 112
       Properties.DecimalPlaces = 5
       Properties.DisplayFormat = ',0.00000;-,0.00000'
       Properties.MaxLength = 10
@@ -318,7 +290,7 @@ object frmeditor: Tfrmeditor
     end
     object Ed8: TcxCurrencyEdit
       Left = 236
-      Top = 138
+      Top = 139
       Properties.DecimalPlaces = 5
       Properties.DisplayFormat = ',0.00000;-,0.00000'
       Properties.MaxLength = 10

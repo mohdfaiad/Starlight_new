@@ -60,6 +60,8 @@ Begin
   end
   else
     if (frmSettings.WindowState = wsMinimized) then frmSettings.WindowState := wsNormal;
+
+  result := true;
 end;
 
 procedure TfrmSettings.aCloseExecute(Sender: TObject);

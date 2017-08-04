@@ -51,6 +51,7 @@ type
     cdsSQL: TOraStoredProc;
     cxLabel4: TcxLabel;
     edSumPlastic: TcxCurrencyEdit;
+    rgOperType: TRadioGroup;
     procedure edNickKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure aCloseExecute(Sender: TObject);
     procedure aEnterExecute(Sender: TObject);
@@ -93,8 +94,6 @@ begin
     exit;
   end;
 
-  //if Q_CLIENTS.Active and (Q_CLIENTS.RecordCount > 0) and ((edSumm.EditValue <> 0) or (edSumPlastic.EditValue <> 0)) then
-  //begin
     try
       cdsSQL.Close;
       cdsSQL.ParamByName('p_buh_id').Value              := null;
@@ -150,7 +149,6 @@ begin
     except
       on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
     end;
-  //end;
 end;
 
 procedure TfrmCashModuleInOut.edNickKeyDown(Sender: TObject; var Key: Word;
@@ -200,7 +198,6 @@ begin
 end;
 
 function TfrmCashModuleInOut.MainFormShow(dt: TDate; cur_paydesk: integer; is_action: string) : boolean;
- var ddd: TDate;
 Begin
 
   Application.CreateForm(TfrmCashModuleInOut, frmCashModuleInOut);
@@ -212,13 +209,14 @@ Begin
 
       if (is_action = 'деньги') then
       begin
-        Caption := 'Приход / возврат денег в кассу';
-        grClients.Visible := false;
-        cxLblNakl.Visible := false;
-        edNick.Visible    := false;
-        edFIO.Visible     := false;
-        edSumPlastic.Enabled := false;
-        aEnter.Enabled := true;
+        Caption := 'Операция с денегами';
+        grClients.Visible     := false;
+        cxLblNakl.Visible     := false;
+        edNick.Visible        := false;
+        edFIO.Visible         := false;
+        edSumPlastic.Enabled  := false;
+        aEnter.Enabled        := true;
+        rgOperType.Visible    := true;
       end;
       
 
@@ -229,6 +227,7 @@ Begin
       end;
     End;
   finally
+    result := true;
     frmCashModuleInOut.Free;
   end;
 

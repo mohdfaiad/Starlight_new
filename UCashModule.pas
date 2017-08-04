@@ -134,6 +134,17 @@ type
     grCashModuleVPERCENTAGE: TcxGridDBColumn;
     bstCashSmena: TdxBarStatic;
     bstCashOperator: TdxBarStatic;
+    CDS_BILLUNIT_SUMM: TFloatField;
+    btnDel: TdxBarLargeButton;
+    aDel: TAction;
+    CDS_CASHMODULEPRINT_TYPE: TStringField;
+    CDS_CASHMODULEIS_PRINTED: TIntegerField;
+    grCashModuleVPRINT_TYPE: TcxGridDBColumn;
+    grCashModuleVIS_PRINTED: TcxGridDBColumn;
+    bstNotKKM: TdxBarStatic;
+    cxStyleRepository1: TcxStyleRepository;
+    stNotKKM: TcxStyle;
+    dxBarButton7: TdxBarButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -163,6 +174,12 @@ type
     procedure mKKM_ResetCheckClick(Sender: TObject);
     procedure aCashExecute(Sender: TObject);
     procedure dxBarButton6Click(Sender: TObject);
+    procedure aDelExecute(Sender: TObject);
+    procedure CDS_CASHMODULEAfterScroll(DataSet: TDataSet);
+    procedure grCashModuleVCustomDrawCell(Sender: TcxCustomGridTableView;
+      ACanvas: TcxCanvas; AViewInfo: TcxGridTableDataCellViewInfo;
+      var ADone: Boolean);
+    procedure dxBarButton7Click(Sender: TObject);
   private
     { Private declarations }
     driver: OLEVariant;
@@ -174,6 +191,7 @@ type
     { Public declarations }
     function MainFormShow : boolean;
     procedure ShowKKMError(mess: string);
+    procedure setKKMMark(p_id: string);
   end;
 
 var
@@ -201,7 +219,9 @@ Begin
     end;
   end
   else
-   if (frmCashModule.WindowState = wsMinimized) then frmCashModule.WindowState := wsNormal;
+    if (frmCashModule.WindowState = wsMinimized) then frmCashModule.WindowState := wsNormal;
+
+  result := true;
 end;
 
 
@@ -357,7 +377,7 @@ begin
 
     grCashModule.SetFocus;
   except
-    on E: Exception do ShowMessage(E.Message);
+    on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
   end;
 
 end;
@@ -416,6 +436,20 @@ begin
   grCashModule.SetFocus;
 end;
 
+// Уалить
+procedure TfrmCashModule.aDelExecute(Sender: TObject);
+begin
+  if not CDS_CASHMODULE.Active or CDS_CASHMODULE.IsEmpty then exit;
+  //if CDS_CASHMODULESUMM.IsNull then exit;
+
+  if MessageDlg('Удалить запись №'+CDS_CASHMODULECASHE_MODULE_ID.AsString+'?',mtConfirmation,[mbYes, mbNo],0) <> mrYes then exit;
+  
+  try
+    CDS_CASHMODULE.Delete;
+  except
+    on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
+  end;
+end;
 
 // аванс
 procedure TfrmCashModule.aPrePayExecute(Sender: TObject);
@@ -447,15 +481,19 @@ var bm: TBookMark;
     cds: TDataSet;
 begin
   cds := grCashModuleV.DataController.DataSet;
-  bm  := cds.GetBookmark;   // чтото типа application.processmess -  не понял смысла
+  bm  := cds.GetBookmark;   
 
   try
     CDS_CASHMODULE.Close;
-    CDS_CASHMODULE.ParamByName('p_user').AsString       := DM.OraSession.Username;
+    if DM.cds_rights_users.Locate('right_name','просмотр данных кас.модуля',[]) then
+      CDS_CASHMODULE.ParamByName('p_user').AsString       := ''
+    else
+      CDS_CASHMODULE.ParamByName('p_user').AsString       := DM.OraSession.Username;
     CDS_CASHMODULE.ParamByName('p_date_begin').AsDate   := deCoursesBegin.CurDate; // deCoursesBegin.EditValue;
     CDS_CASHMODULE.ParamByName('p_date_end').AsDate     := deCoursesEnd.CurDate;
     try
       CDS_CASHMODULE.Open;
+      aDel.Enabled := ((CDS_CASHMODULE.RecordCount > 0) and (CDS_CASHMODULEIS_PRINTED.AsInteger = 0));
     except
       on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
     end;
@@ -466,6 +504,15 @@ begin
   end;
 end;
 
+
+procedure TfrmCashModule.CDS_CASHMODULEAfterScroll(DataSet: TDataSet);
+begin
+  aDel.Enabled := (CDS_CASHMODULEIS_PRINTED.AsInteger = 0);
+  mKKM_check.Enabled := (CDS_CASHMODULEIS_PRINTED.AsInteger = 0);
+  mKKM_CashInOut.Enabled := (CDS_CASHMODULEIS_PRINTED.AsInteger = 0);
+  mKKM_Correction.Enabled := (CDS_CASHMODULEIS_PRINTED.AsInteger = 0);
+  mKKM_ResetCheck.Enabled := (CDS_CASHMODULEIS_PRINTED.AsInteger = 0);
+end;
 
 // Закрыть
 procedure TfrmCashModule.aExitExecute(Sender: TObject);
@@ -484,6 +531,22 @@ begin
   aRefresh.Execute;
 end;
 
+
+procedure TfrmCashModule.grCashModuleVCustomDrawCell(
+  Sender: TcxCustomGridTableView; ACanvas: TcxCanvas;
+  AViewInfo: TcxGridTableDataCellViewInfo; var ADone: Boolean);
+var val1 : variant;
+begin
+  if (not AViewInfo.Selected) and (grCashModuleV.DataController.DataSet.RecordCount > 0) then
+  begin
+    // Красим 0 в количестве
+    val1  := grCashModuleV.DataController.GetValue(
+                AViewInfo.GridRecord.RecordIndex, grCashModuleV.GetColumnByFieldName('IS_PRINTED').Index
+                );
+    if (val1 = 0) then
+        ACanvas.Brush.Color := stNotKKM.Color;
+  end;
+end;
 
 procedure TfrmCashModule.grCashModuleVDblClick(Sender: TObject);
 begin
@@ -532,24 +595,10 @@ end;
 
 // сформировать чек
 procedure TfrmCashModule.mKKM_checkClick(Sender: TObject);
-var tmpStr :string;
-    i: integer;
-    res: variant;
-    discount: real;
+var res: variant;
 begin
   if not CDS_CASHMODULE.Active or CDS_CASHMODULE.IsEmpty then exit;
   if CDS_CASHMODULESUMM.IsNull then exit;
-
-{
-  tmpStr := '';
-  for I := 0 to gr_cashbook_v.Controller.SelectedRowCount - 1 do
-  begin
-    tmpStr := tmpStr + VarToStr(gr_cashbook_v.Controller.SelectedRows[i].Values[_gr_cashbook_vID_CASH_TMP.Index])+',';
-  end;
-  if Length(tmpStr)>0 then tmpStr := copy(tmpStr,1,Length(tmpStr)-1);
-
-  if tmpStr = '' then exit;
-}
 
   try
     CDS_BILL.Close;
@@ -560,13 +609,6 @@ begin
 
     // получаем состояние ККМ
     if driver.GetStatus <> 0 then Exit;
-
-{
-    // проверяем на всякий случай ККМ на фискализированность
-    if driver.Fiscal then
-      if Application.MessageBox('ККМ фискализирована! Вы действительно хотите продолжить?', PChar(Application.Title), MB_ICONEXCLAMATION + MB_YESNO) = idNo then
-        Exit;
-}
 
     // если есть открытый чек, то отменяем его
     if driver.CheckState <> 0 then
@@ -634,107 +676,46 @@ begin
     CDS_BILL.First;
     while not CDS_BILL.Eof do
     begin
-      if CDS_CASHMODULEPERCENTAGE.AsInteger > 0 then
+
+      if CDS_CASHMODULETAX_TYPE.AsInteger = 3 then
       begin
-        // DiscountType - Тип скидки:
-        // 	0 - суммовая  // 	1 - процентная
-        driver.DiscountValue  := CDS_CASHMODULEPERCENTAGE.AsInteger;
-        driver.DiscountType   := 1;
-      end else driver.DiscountValue  := 0;
+        driver.BeginItem;
+        driver.EnableCheckSumm  := false;
+        driver.TaxMode          := 0;
+        driver.Price            := CDS_BILLPRICE.AsCurrency;
+        driver.Quantity         := CDS_BILLQUANTITY.AsInteger;
+        driver.Summ             := CDS_BILLUNIT_SUMM.AsCurrency;
+        driver.TaxTypeNumber    := CDS_CASHMODULETAX_TYPE.AsInteger;
+        driver.Name             := CDS_BILLNOM_NAME.AsString;
+        driver.Department       := CDS_CASHMODULECUR_SECTION.AsInteger;
+        driver.ItemType         := 1;
+        driver.PaymentMode      := 4;
+        driver.EndItem;
+      end
+      else
+      begin
+        if CDS_CASHMODULEPERCENTAGE.AsInteger > 0 then
+        begin
+          // DiscountType - Тип скидки:
+          // 	0 - суммовая  // 	1 - процентная
+          driver.DiscountValue  := CDS_CASHMODULEPERCENTAGE.AsInteger;
+          driver.DiscountType   := 1;
+        end else driver.DiscountValue  := 0;
 
-      // Регистрация
-      driver.Name           := CDS_BILLNOM_NAME.AsString;
-      driver.Price          := CDS_BILLPRICE.AsCurrency;
-      driver.Quantity       := CDS_BILLQUANTITY.AsInteger;
-      driver.Department     := CDS_CASHMODULECUR_SECTION.AsInteger;
-      driver.TaxTypeNumber  := CDS_CASHMODULETAX_TYPE.AsInteger;
+        // Регистрация
+        driver.Name           := CDS_BILLNOM_NAME.AsString;
+        driver.Price          := CDS_BILLPRICE.AsCurrency;
+        driver.Quantity       := CDS_BILLQUANTITY.AsInteger;
+        driver.Department     := CDS_CASHMODULECUR_SECTION.AsInteger;
+        driver.TaxTypeNumber  := CDS_CASHMODULETAX_TYPE.AsInteger;
 
-      //if driver.Registration <> 0 then raise Exception.Create('Ошибка регистрации записи продажи товара '+CDS_BILLNOM_NAME.AsString+' по накладной '+CDS_CASHMODULEINVOICE.AsString);;
-      res := driver.Registration;
-      if res <> 0 then begin ShowKKMError('Формирование чека :: Ошибка регистрации записи продажи товара '+CDS_BILLNOM_NAME.AsString+' по накладной '+CDS_CASHMODULEINVOICE.AsString); exit; end;
+        res := driver.Registration;
+        if res <> 0 then begin ShowKKMError('Формирование чека :: Ошибка регистрации записи продажи товара '+CDS_BILLNOM_NAME.AsString+' по накладной '+CDS_CASHMODULEINVOICE.AsString); exit; end;
+      end;
 
       CDS_BILL.Next;
     end;
 
-
-    // Для оплаты по сч.фактуре сделаем округление копеек по плюсу
-    if (
-      (CDS_CASHMODULESUMM.AsCurrency > 0) and
-      (CDS_CASHMODULETAX_TYPE.AsInteger = 3) and (CDS_CASHMODULEPARTIAL_PAYMENT.AsInteger = 0)
-      and (CDS_CASHMODULESUMM.AsCurrency <> (CDS_CASHMODULECASH_IN.AsCurrency + CDS_CASHMODULECARD_IN.AsCurrency))
-    ) then
-    begin
-      discount := 0;
-      // Если оплата сложная или наличностью, то округлять будем только в меньшую сторону, в большу просто сдача будет
-      if ((CDS_CASHMODULESUMM.AsCurrency > (CDS_CASHMODULECASH_IN.AsCurrency + CDS_CASHMODULECARD_IN.AsCurrency)) and (CDS_CASHMODULECASH_IN.AsCurrency > 0)) then
-        discount := CDS_CASHMODULESUMM.AsCurrency - (CDS_CASHMODULECASH_IN.AsCurrency + CDS_CASHMODULECARD_IN.AsCurrency);
-
-      // Если оплата пластиком, то делаем округление в любом случае
-      if (CDS_CASHMODULESUMM.AsCurrency <> CDS_CASHMODULECARD_IN.AsCurrency) and (CDS_CASHMODULECASH_IN.AsCurrency = 0) then
-        discount := CDS_CASHMODULESUMM.AsCurrency - CDS_CASHMODULECARD_IN.AsCurrency;
-
-      if discount <> 0 then
-      begin
-        driver.Summ := abs(discount);
-        driver.Destination := 0;
-        if discount > 0 then
-        begin
-          if driver.SummDiscount <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить SummDiscount'); exit; end;
-        end
-        else
-        begin
-          if driver.SummCharge <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить SummCharge'); exit; end
-        end;
-      end;
-    end;
-
-    // Для оплаты по сч.фактуре сделаем округление копеек по минусу
-    if (
-      (CDS_CASHMODULESUMM.AsCurrency < 0) and
-      (CDS_CASHMODULETAX_TYPE.AsInteger = 3) and (CDS_CASHMODULEPARTIAL_PAYMENT.AsInteger = 0)
-      and (CDS_CASHMODULESUMM.AsCurrency <> (CDS_CASHMODULECASH_OUT.AsCurrency + CDS_CASHMODULECARD_OUT.AsCurrency))
-    ) then
-    begin
-      discount := 0;
-      // Если оплата сложная или наличностью, то округлять будем только в меньшую сторону, в большу просто сдача будет
-      if (( abs(CDS_CASHMODULESUMM.AsFloat) > (CDS_CASHMODULECASH_OUT.AsCurrency + CDS_CASHMODULECARD_OUT.AsCurrency)) and (CDS_CASHMODULECASH_OUT.AsCurrency < 0)) then
-        discount := CDS_CASHMODULESUMM.AsCurrency + (CDS_CASHMODULECASH_OUT.AsCurrency + CDS_CASHMODULECARD_OUT.AsCurrency);
-
-      // Если оплата пластиком, то делаем округление в любом случае
-      if (CDS_CASHMODULESUMM.AsCurrency <> CDS_CASHMODULECARD_OUT.AsCurrency) and (CDS_CASHMODULECASH_OUT.AsCurrency = 0) then
-        discount := CDS_CASHMODULESUMM.AsCurrency + CDS_CASHMODULECARD_OUT.AsCurrency;
-
-      if discount <> 0 then
-      begin
-        driver.Summ := abs(discount);
-        driver.Destination := 0;
-        if discount < 0 then
-        begin
-          if driver.SummDiscount <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить SummDiscount'); exit; end;
-        end
-        else
-        begin
-          if driver.SummCharge <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить SummCharge'); exit; end
-        end;
-      end;
-    end;
-
-{
-// Отброс копеек (округление чека без распределения по позициям). Скидка на чек доступна только для его округления до рубля. Таким образом недоступны: надбавки, назначение "на позицию", процентные значения.  SummCharge(), PercentsCharge(), PercentsDiscount () и ResetChargeDiscount () более недоступны
-// Destination - Назначение скидки:
-// 	0 - на чек
-// 	1 - на позицию (недоступно)
-driver.Destination := 0;
-driver.Summ := 0.01;
-driver.SummDiscount;
-}
-
-// driver.DiscountValue = 10;
-// // DiscountType - Тип скидки:
-// // 	0 - суммовая
-// // 	1 - процентная
-// driver.DiscountType = 0;
-//driver.Registration();
 
     // Оплата чека
       // наличными 100%
@@ -806,25 +787,33 @@ driver.SummDiscount;
       end;
 
       if res <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить "Payment"'); exit; end;
-{
-driver.Summ := -0.1;
-driver.Destination := 0;
-res := driver.SummDiscount;
-if res <> 0 then begin ShowKKMError('Формирование чека :: Ошибка регистрации скидки '+CDS_BILLNOM_NAME.AsString+' по накладной '+CDS_CASHMODULEINVOICE.AsString); exit; end;
-driver.Caption := 'Округление: 0.10';
-driver.PrintString;
-}
-    //if driver.CloseCheck <> 0 then raise Exception.Create('Ошибка закрытия чека');
+
     res := driver.CloseCheck;
     if res <> 0 then begin ShowKKMError('Формирование чека :: Ошибка закрытия чека'); exit; end;
 
+    setKKMMark(CDS_CASHMODULECASHE_MODULE_ID.AsString);
 
-{
-// Запись контакта покупателя для отправки электронного чека
-driver.AttrNumber = 1008;
-driver.AttrValue = "+79091235566";
-driver.WriteAttribute();
-}
+
+
+      DM.cdsSQL.SQL.Clear;
+      DM.cdsSQL.SQL.Add('begin CASH_PKG.add_cash_module_after(:P_BUH_ID, :P_PARTIAL_PAYMENT, :P_AS_CHL, :P_NDS_TYPE, :P_SUMM, :P_IN_CASH, :P_IN_PLASTIC, :P_OUT_CASH, :P_OUT_PLASTIC, :P_CUR_CASH, :P_CLIENT, :P_ADDRESS, :P_PERCENT); end;');
+      dm.cdsSQL.Close;
+      dm.cdsSQL.ParamByName('p_buh_id').AsInteger          :=  CDS_CASHMODULEBUH_ID.AsInteger; // CDS_INVOICEID_DOC.AsInteger;
+      dm.cdsSQL.ParamByName('p_partial_payment').AsInteger := CDS_CASHMODULEPARTIAL_PAYMENT.AsInteger; // BoolToInt(chbPartialPayment.Checked);
+      dm.cdsSQL.ParamByName('p_as_chl').AsInteger := CDS_CASHMODULECUR_SECTION.AsInteger;
+      dm.cdsSQL.ParamByName('p_nds_type').AsInteger      := CDS_CASHMODULETAX_TYPE.AsInteger;
+
+      dm.cdsSQL.ParamByName('p_summ').AsCurrency           := CDS_CASHMODULESUMM.AsCurrency; // CDS_INVOICESUMM.AsCurrency;
+      dm.cdsSQL.ParamByName('p_in_cash').Value             := CDS_CASHMODULECASH_IN.AsCurrency; //  edINcash.EditValue;
+      dm.cdsSQL.ParamByName('p_in_plastic').Value          := CDS_CASHMODULECARD_IN.AsCurrency; //  edINplastic.EditValue;
+      dm.cdsSQL.ParamByName('p_out_cash').Value            := CDS_CASHMODULECASH_OUT.AsCurrency; //  edOUTcash.EditValue;
+      dm.cdsSQL.ParamByName('p_out_plastic').Value         := CDS_CASHMODULECARD_OUT.AsCurrency; //  edOUTplastic.EditValue;
+      dm.cdsSQL.ParamByName('p_cur_cash').AsInteger        := cur_paydesk;
+      dm.cdsSQL.ParamByName('p_client').Value              := null;
+      dm.cdsSQL.ParamByName('p_address').AsString          := CDS_CASHMODULESEND_ADDRESS.AsString; // VarToStr(edAddress.EditValue);
+      dm.cdsSQL.ParamByName('p_percent').AsInteger         := CDS_CASHMODULEPERCENTAGE.AsInteger; // edPercent.EditValue;
+      dm.cdsSQL.Execute;
+
 
     CDS_BILL.Close;
   except
@@ -832,6 +821,21 @@ driver.WriteAttribute();
   End;
 end;
 
+
+procedure TfrmCashModule.setKKMMark(p_id: string);
+begin
+  try
+    dm.cdsSQL.Close;
+    dm.cdsSQL.SQL.clear;
+    dm.cdsSQL.SQL.Add('update cashe_module set IS_PRINTED=1 where CASHE_MODULE_ID='+p_id);
+    dm.cdsSQL.execute;
+    dm.OraSession.Commit;
+    dm.cdsSQL.Close;
+    CDS_CASHMODULE.RefreshRecord;
+  except
+    on E: Exception do  MessageBox(Handle, PChar('Произошла ошибка!'#10#13 + E.Message), 'Внимание', MB_ICONERROR);
+  End;
+end;
 
 // приход денег в кассу
 procedure TfrmCashModule.mKKM_CashInOutClick(Sender: TObject);
@@ -854,6 +858,8 @@ begin
     driver.Summ := CDS_CASHMODULECASH_OUT.AsCurrency + CDS_CASHMODULECARD_OUT.AsCurrency;
     driver.CashOutcome;
   end;
+
+  setKKMMark(CDS_CASHMODULECASHE_MODULE_ID.AsString);
 end;
 
 
@@ -1198,6 +1204,150 @@ begin
 
 
 
+
+{
+TestMode ТестовыйРежим Log RW Признак тестового режима: FALSE / TRUE
+EnableCheckSumm ПроверятьСумму Log RW Проверять наличность: FALSE /TRUE
+TaxMode РежимНалога Int RW Область применения налога: 0 – налог на позицию  1 – налог за единицу
+Price Цена Dbl RW Цена товара: 0.00 ... 99999999.99
+Quantity Количество Dbl RW Количество товара: 0.000 … 9999999.999
+Summ Сумма Dbl RW Сумма регистрируемой позиции чека:  0.00 … 99999999.99
+TaxTypeNumber НомерНалога Int RW Номер налоговой ставки: 1..6
+TaxSumm СуммаНалога Dbl RW Сумма налога на позицию
+Department Секция Int RW Номер секции: 0..30
+ItemType ПредметРасчета Int RW Номер признака предмета расчета: 1..12
+PaymentMode СпособРасчета Int RW Номер способа  расчета: 1..7
+Name Наименование Str RW Название товара
+}
+
+
+    CDS_BILL.Close;
+    CDS_BILL.Params.ParamByName('P_CASHE_MODULE_ID').AsInteger       := CDS_CASHMODULECASHE_MODULE_ID.AsInteger;
+    CDS_BILL.Open;
+
+    if CDS_BILL.RecordCount = 0 then raise Exception.Create('Нет данных для печати');
+
+    CDS_BILL.First;
+    while not CDS_BILL.Eof do
+    begin
+      driver.BeginItem;
+      driver.EnableCheckSumm  := false;
+      driver.TaxMode          := 0;
+      driver.Price            := CDS_BILLPRICE.AsCurrency;
+      driver.Quantity         := CDS_BILLQUANTITY.AsInteger;
+      driver.Summ             := CDS_BILLUNIT_SUMM.AsCurrency;
+      driver.TaxTypeNumber    := CDS_CASHMODULETAX_TYPE.AsInteger;
+      driver.Name             := CDS_BILLNOM_NAME.AsString;
+      //driver.Department := 1;
+      driver.ItemType         := 1;
+      driver.PaymentMode      := 4;
+      driver.EndItem;
+      CDS_BILL.Next;
+    end;
+    CDS_BILL.Close;
+{
+driver.BeginItem;
+driver.EnableCheckSumm := false;
+driver.TaxMode := 0;
+  driver.Price := 58.6;
+  driver.Quantity := 8;
+  driver.Summ     := 468.79;
+  driver.TaxTypeNumber := 3;
+  driver.Name     := 'Альстромерия Ариэль BAT';
+  //driver.Department := 1;
+  driver.ItemType  := 1;
+  driver.PaymentMode := 5;
+driver.EndItem;
+
+
+driver.BeginItem;
+driver.EnableCheckSumm := false;
+driver.TaxMode := 0;
+  driver.Price := 60.8;
+  driver.Quantity := 8;
+  driver.Summ     := 486.44;
+  driver.TaxTypeNumber := 3;
+  driver.Name     := 'Альстромерия Гранада WWF';
+  //driver.Department := 1;
+  driver.ItemType  := 1;
+  driver.PaymentMode := 5;
+driver.EndItem;
+
+driver.BeginItem;
+driver.EnableCheckSumm := false;
+driver.TaxMode := 0;
+  driver.Price := 45.3;
+  driver.Quantity := 8;
+  driver.Summ     := 362.4;
+  driver.TaxTypeNumber := 3;
+  driver.Name     := 'Альстромерия Куросава WWF';
+  //driver.Department := 1;
+  driver.ItemType  := 1;
+  driver.PaymentMode := 5;
+driver.EndItem;
+
+driver.BeginItem;
+driver.EnableCheckSumm := false;
+driver.TaxMode := 0;
+  driver.Price := 64.2;
+  driver.Quantity := 8;
+  driver.Summ     := 513.63;
+  driver.TaxTypeNumber := 3;
+  driver.Name     := 'Альстромерия Примадонна WWF';
+  //driver.Department := 1;
+  driver.ItemType  := 1;
+  driver.PaymentMode := 5;
+driver.EndItem;
+
+driver.BeginItem;
+driver.EnableCheckSumm := false;
+driver.TaxMode := 0;
+  driver.Price := 58.65;
+  driver.Quantity := 8;
+  driver.Summ     := 469.17;
+  driver.TaxTypeNumber := 3;
+  driver.Name     := 'Альстромерия Сайберия BAT';
+  //driver.Department := 1;
+  driver.ItemType  := 1;
+  driver.PaymentMode := 5;
+driver.EndItem;
+
+driver.BeginItem;
+driver.EnableCheckSumm := false;
+driver.TaxMode := 0;
+  driver.Price := 36.99;
+  driver.Quantity := 8;
+//  driver.Summ     := 295.94;
+  driver.Summ     := 0;
+  driver.TaxTypeNumber := 3;
+  driver.Name     := 'Альстромерия Селекшен Оранж BAT';
+  //driver.Department := 1;
+  driver.ItemType  := 1;
+  driver.PaymentMode := 5;
+driver.EndItem;
+}
+  // закрытие чека наличными без ввода полученной от клиента суммы
+  driver.TypeClose := 0;
+        //driver.Summ       := 135.05;
+        driver.Summ       := CDS_CASHMODULECASH_IN.AsCurrency;
+        res := driver.Payment;
+  if res <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить Payment'); exit; end;
+  if driver.CloseCheck <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить TypeClose'); exit; end;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //    driver.PaymentMode := 3;
 //    driver.AttrNumber := 349;
 //    driver.AttrValue := 5;
@@ -1211,16 +1361,17 @@ begin
 6 — передача в кредит
 7 — оплата кредита
 }
- driver.DiscountValue := 10;
+// driver.DiscountValue := 0;
 // // DiscountType - Тип скидки:
 // // 	0 - суммовая
 // // 	1 - процентная
- driver.DiscountType := 1;
-
+//driver.DiscountType := 1;
+{
+driver.BeginItem;
   driver.Name := 'Молоко';
   driver.Price := 10.45;
   driver.Quantity := 1;
-  driver.Department := 1;
+  //driver.Department := 1;
 // TaxTypeNumber - Номер налога:
 // 	0 - Налог из секции
 // 	1 - НДС 0%
@@ -1230,17 +1381,20 @@ begin
 // 	5 - НДС с расчётной ставкой 10%
 // 	6 - НДС с расчётной ставкой 18%
   driver.TaxTypeNumber := 3;
-  if driver.Registration <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить Registration'); exit; end;
+driver.PaymentMode := 1;
+driver.EndItem;
+}
+//  if driver.Registration <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить Registration'); exit; end;
 
   // скидка суммой на предыдущую позицию
 //  driver.Percents := 10;
 //  driver.Destination := 1;
 //  if driver.PercentsDiscount <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить PercentsDiscount'); exit; end;
- driver.DiscountValue := 10;
+// driver.DiscountValue := 10;
 // // DiscountType - Тип скидки:
 // // 	0 - суммовая
 // // 	1 - процентная
- driver.DiscountType := 1;
+// driver.DiscountType := 1;
 {
   // регистрация продажи
   driver.Name := 'Фанта';
@@ -1255,6 +1409,7 @@ begin
 //  driver.Destination := 0;
 //  if driver.SummDiscount <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить SummDiscount'); exit; end;
 
+{
   // закрытие чека наличными без ввода полученной от клиента суммы
   driver.TypeClose := 0;
         //driver.Summ       := 135.05;
@@ -1262,7 +1417,8 @@ begin
         res := driver.Payment;
   if res <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить Payment'); exit; end;
   if driver.CloseCheck <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить TypeClose'); exit; end;
-{
+}
+  {
     CDS_BILL.First;
     while not CDS_BILL.Eof do
     begin
@@ -1388,5 +1544,40 @@ end;
 
 
 
+
+procedure TfrmCashModule.dxBarButton7Click(Sender: TObject);
+var res: variant;
+begin
+    // получаем состояние ККМ
+    if driver.GetStatus <> 0 then Exit;
+
+    // если есть открытый чек, то отменяем его
+    if driver.CheckState <> 0 then
+    begin
+      //if driver.CancelCheck <> 0 then raise Exception.Create('Невозможно отменить чек при закрытии смены');;
+      res := driver.CancelCheck;
+      if res <> 0 then begin ShowKKMError('Формирование чека :: Невозможно отменить чек'); exit; end;
+    end;
+
+
+    driver.AttrNumber := 1021;
+    driver.AttrValue := 'Кассир 1';
+    driver.WriteAttribute;
+
+
+    driver.Password := 30;
+    // входим в режим регистрации
+    driver.Mode := 6;
+    res := driver.SetMode;
+    if res <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить режим = 6'); exit; end;
+
+driver.StreamFormat := 5; // Формат данных «шестнатиричный
+// с 0 и разделителем»
+// Войти в режим регистрации
+driver.OutboundStream := 'AB 00 00 00 00 10';
+res := driver.RunCommand; // Выполнить команду
+    if res <> 0 then begin ShowKKMError('Формирование чека :: Невозможно установить режим = 6'); exit; end;
+
+end;
 
 end.

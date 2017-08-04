@@ -57,7 +57,6 @@ uses Udm;
 {$R *.dfm}
 
 function TfrmCashModuleInfo.MainFormShow(id: integer; str: string) : boolean;
- var ddd: TDate;
 Begin
   Application.CreateForm(TfrmCashModuleInfo, frmCashModuleInfo);
   try
@@ -74,6 +73,7 @@ Begin
       end;
     End;
   finally
+    result := true;
     frmCashModuleInfo.Free;
   end;
 end;

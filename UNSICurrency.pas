@@ -122,6 +122,8 @@ Begin
   end
   else
    if (frmNSICurreny.WindowState = wsMinimized) then frmNSICurreny.WindowState := wsNormal;
+
+  result := true;
 end;
 
 
@@ -146,7 +148,8 @@ procedure TfrmNSICurreny.FormCreate(Sender: TObject);
 begin
   Application.CreateForm(Tfrmeditor, frmeditor);
   grCurrency.Font.Size := intDefFont;
-
+  bmToolBar.Font.Size  := intDefFont;
+  
   // получение прав на программу
   recUserRules  := getRules(DM.cdsRules,13);
   p_read        := recUserRules.r_read;
@@ -166,11 +169,11 @@ procedure TfrmNSICurreny.FormShow(Sender: TObject);
 begin
   try
     deCoursesBegin.Text := DateToStr(Now - 14);
-    deCoursesEnd.Text   := DateToStr(Now);;
+    deCoursesEnd.Text   := DateToStr(Now);
     aRefresh.Execute;
     grCurrency.SetFocus;
   except
-    on E: Exception do ShowMessage(E.Message);
+    on E: Exception do MessageBox(Handle,PChar('Ошибка при открытии формы!'+#13#10+E.Message),'Возникла ошибка',MB_ICONERROR); 
   end;
 end;
 
@@ -226,7 +229,7 @@ begin
       OraSQL2.Execute;
       Q_CURR.Refresh;
     except
-      on E: Exception do 
+      on E: Exception do
         MessageBox(Handle,PChar('Ошибка при удалении курсов валют!'+#13#10+E.Message),'Возникла ошибка',MB_ICONERROR);
     end;
   end;
@@ -261,7 +264,7 @@ var bm: TBookMark;
     cds: TDataSet;
 begin
   cds := grCurrencyView.DataController.DataSet;
-  bm  := cds.GetBookmark;   // чтото типа application.processmess -  не понял смысла
+  bm  := cds.GetBookmark;
 
   try
     Q_CURR.Close;
@@ -294,7 +297,6 @@ var
    FullFileName: string;
    oDoc, oIE:    Variant;
    strHTML:      string;
-   s1, s2:       real;
    f:            textfile;
 begin
   FullFileName := 'c:\xml_daily.xml'; // Путь к временному файлу где хранится сводка курсов валют
@@ -308,13 +310,13 @@ begin
   While (oIE.Busy) do begin
   end;
   try
-    oDoc := oIE.Document;
+    oDoc    := oIE.Document;
     strHTML := oDoc.Body.innerText;
   except
     Exit;
   end;
 
-  oDoc:=Null;
+  oDoc := Null;
   oIE.Quit;
                   
   AssignFile(F, FullFileName);

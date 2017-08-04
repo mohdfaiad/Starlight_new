@@ -800,6 +800,8 @@ Begin
   end
   else
     if (frmRegistration.WindowState = wsMinimized) then frmRegistration.WindowState := wsNormal;
+
+  result := true;
 end;
 
 //перенес все из оншоу в кнопку изменить, а то непонятно когда frmEditRegistration.Free делать
@@ -1392,8 +1394,6 @@ end;
 //выгр клиентов из файла
 procedure TfrmRegistration.bbSyncClientsClick(Sender: TObject);
 var sql_str: string;
-    res,ResText : Variant;
-    new_id, old_id, param_, s_id_, p_price: integer;
     F_CSV: TextFile;
 begin
   if MessageDlg('Создать экспортный файл клиентов для Москвы?',  mtConfirmation, [mbOk, mbNo], 0) <> mrOk then
@@ -1662,7 +1662,7 @@ end;
 
 //укороч.печать
 procedure TfrmRegistration.BitBtn5Click(Sender: TObject);
-var str: string;  i:integer;  id:string;
+var i:integer;  id:string;
 begin
 try
   path := ExtractFilePath(Application.ExeName);
@@ -1731,7 +1731,6 @@ end;
 
 // статистика - не готова форма
 procedure TfrmRegistration.BitBtn7Click(Sender: TObject);
-var sql: string;
 begin
  { statistic.Chart1.Series[0].Clear;
   statistic.Chart1.Title.Text.Clear;
@@ -1875,7 +1874,6 @@ end;
 
 //полная печать
 procedure TfrmRegistration.btninfClick(Sender: TObject);
-var str: string;
 begin
 try
   path := ExtractFilePath(Application.ExeName);

@@ -2,13 +2,14 @@ object dm: Tdm
   OldCreateOrder = False
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Height = 220
-  Width = 547
+  Height = 316
+  Width = 446
   object OraSession: TOraSession
     Options.Direct = True
     Username = 'creator'
     Password = '123456'
     Server = 'KLEPOV:1521:STARNEW'
+    AutoCommit = False
     LoginPrompt = False
     AfterConnect = OraSessionAfterConnect
     HomeName = 'OraClient11g_home1'
@@ -74,7 +75,7 @@ object dm: Tdm
     Left = 40
     Top = 96
     Bitmap = {
-      494C010127002C00C00020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010127002C00D00020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004001000001002000000000000080
       0200000000000000000000000000000000000000000000000000000000000000
       000000000000000000000101011A0B0B0B743B3D3DB4777777D5838383DA5152
@@ -5367,7 +5368,7 @@ object dm: Tdm
     Left = 40
     Top = 153
     Bitmap = {
-      494C01013C0048007C0018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01013C0048008C0018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000008001000001002000000000000040
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -10177,5 +10178,23 @@ object dm: Tdm
     Filter = #1060#1072#1081#1083#1099' EXCEL (*.xls)|*.xls'
     Left = 177
     Top = 153
+  end
+  object cds_rights_users: TOraQuery
+    SQL.Strings = (
+      
+        'SELECT b.right_name from user_rights_list a, user_rights b where' +
+        ' a.user_id = :v_user and a.user_rights_id = b.user_rights_id')
+    Left = 256
+    Top = 96
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'v_user'
+        ParamType = ptInput
+      end>
+    object cds_rights_usersRIGHT_NAME: TStringField
+      FieldName = 'RIGHT_NAME'
+      Size = 50
+    end
   end
 end

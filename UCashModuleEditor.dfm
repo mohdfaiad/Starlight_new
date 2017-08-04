@@ -4,7 +4,7 @@ object frmCashModuleEditor: TfrmCashModuleEditor
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1060#1086#1088#1084#1080#1088#1086#1074#1072#1085#1080#1077' '#1086#1087#1077#1088#1072#1094#1080#1080
-  ClientHeight = 492
+  ClientHeight = 517
   ClientWidth = 584
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object frmCashModuleEditor: TfrmCashModuleEditor
   TextHeight = 13
   object pnlBottom: TPanel
     Left = 0
-    Top = 452
+    Top = 477
     Width = 584
     Height = 40
     Align = alBottom
@@ -67,7 +67,7 @@ object frmCashModuleEditor: TfrmCashModuleEditor
     Left = 0
     Top = 0
     Width = 584
-    Height = 80
+    Height = 109
     Align = alTop
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -92,7 +92,7 @@ object frmCashModuleEditor: TfrmCashModuleEditor
       TabOrder = 0
       OnEnter = edNumInvoiceEnter
       OnKeyDown = edNumInvoiceKeyDown
-      Width = 130
+      Width = 133
     end
     object cxLblInv: TcxLabel
       Left = 12
@@ -107,8 +107,8 @@ object frmCashModuleEditor: TfrmCashModuleEditor
       Style.IsFontAssigned = True
     end
     object cxLblNakl: TcxLabel
-      Left = 296
-      Top = 8
+      Left = 12
+      Top = 40
       Caption = #8470' '#1089#1095'.'#1092#1072#1082#1090#1091#1088#1099':'
       ParentFont = False
       Style.Font.Charset = DEFAULT_CHARSET
@@ -119,8 +119,8 @@ object frmCashModuleEditor: TfrmCashModuleEditor
       Style.IsFontAssigned = True
     end
     object edNumNakl: TcxTextEdit
-      Left = 441
-      Top = 7
+      Left = 151
+      Top = 39
       ParentFont = False
       Style.Font.Charset = DEFAULT_CHARSET
       Style.Font.Color = clWindowText
@@ -128,14 +128,14 @@ object frmCashModuleEditor: TfrmCashModuleEditor
       Style.Font.Name = 'Tahoma'
       Style.Font.Style = []
       Style.IsFontAssigned = True
-      TabOrder = 3
+      TabOrder = 1
       OnEnter = edNumNaklEnter
       OnKeyDown = edNumNaklKeyDown
       Width = 133
     end
     object cxLblDate: TcxLabel
-      Left = 12
-      Top = 47
+      Left = 302
+      Top = 12
       Caption = #1044#1072#1090#1072' '#1085#1072#1082#1083#1072#1076#1085#1086#1081':'
       ParentFont = False
       Style.Font.Charset = DEFAULT_CHARSET
@@ -146,20 +146,47 @@ object frmCashModuleEditor: TfrmCashModuleEditor
       Style.IsFontAssigned = True
     end
     object edDate: TcxDateEdit
-      Left = 151
-      Top = 46
+      Left = 436
+      Top = 11
       Properties.ImmediatePost = True
       Properties.PostPopupValueOnTab = True
       Properties.SaveTime = False
       Properties.ShowTime = False
       Properties.OnChange = edDatePropertiesChange
-      TabOrder = 5
+      TabOrder = 3
       Width = 130
+    end
+    object cxLabel8: TcxLabel
+      Left = 12
+      Top = 72
+      Caption = #8470' '#1090'.'#1095#1077#1082#1072':'
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -19
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+    end
+    object edNumCheck: TcxTextEdit
+      Left = 151
+      Top = 71
+      ParentFont = False
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -19
+      Style.Font.Name = 'Tahoma'
+      Style.Font.Style = []
+      Style.IsFontAssigned = True
+      TabOrder = 2
+      OnEnter = edNumCheckEnter
+      OnKeyDown = edNumCheckKeyDown
+      Width = 133
     end
   end
   object pnlHelp: TPanel
     Left = 0
-    Top = 412
+    Top = 437
     Width = 584
     Height = 40
     Align = alBottom
@@ -216,9 +243,9 @@ object frmCashModuleEditor: TfrmCashModuleEditor
   end
   object pnlTabs: TPanel
     Left = 0
-    Top = 80
+    Top = 109
     Width = 584
-    Height = 332
+    Height = 328
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -227,12 +254,12 @@ object frmCashModuleEditor: TfrmCashModuleEditor
       Left = 0
       Top = 0
       Width = 584
-      Height = 332
+      Height = 328
       ActivePage = tsh_payment
       Align = alClient
       HideTabs = True
       TabOrder = 0
-      ClientRectBottom = 332
+      ClientRectBottom = 328
       ClientRectRight = 584
       ClientRectTop = 0
       object tsh_payment: TcxTabSheet
@@ -242,7 +269,7 @@ object frmCashModuleEditor: TfrmCashModuleEditor
           Left = 0
           Top = 0
           Width = 584
-          Height = 332
+          Height = 328
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -618,7 +645,7 @@ object frmCashModuleEditor: TfrmCashModuleEditor
           Left = 0
           Top = 0
           Width = 568
-          Height = 316
+          Height = 312
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText

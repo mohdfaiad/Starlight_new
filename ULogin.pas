@@ -52,21 +52,22 @@ var
   f_name: string;
 begin
   frmLogin := TfrmLogin.Create(nil);
+
+  // считывание последних параметров из файла *.ini
+  f_name := Application.ExeName;
+  strAppIniName   := ExtractFilePath(f_name) + Copy(ExtractFileName(f_name),1,Pos('.',ExtractFileName(f_name))) + 'ini';
+
+  // если не найден настроечный файл *.ini
+  if not FileExists(strAppIniName) then
+  begin
+    Application.MessageBox('Не найдены настройки соединения с БД. Обратитесь к разработчикам.', 'Ошибка', MB_ICONWARNING);
+    exit;
+  end;
+
+  IniFile         := TIniFile.Create(strAppIniName);
   try
     Result := False;
 
-    // считывание последних параметров из файла *.ini
-    f_name := Application.ExeName;
-    strAppIniName   := ExtractFilePath(f_name) + Copy(ExtractFileName(f_name),1,Pos('.',ExtractFileName(f_name))) + 'ini';
-
-    // если не найден настроечный файл *.ini
-    if not FileExists(strAppIniName) then
-    begin
-      Application.MessageBox('Не найдены настройки соединения с БД. Обратитесь к разработчикам.', 'Ошибка', MB_ICONWARNING);
-      exit;
-    end;
-
-    IniFile         := TIniFile.Create(strAppIniName);
     intServerPort   := StrToIntDef(IniFile.ReadString('ServerPort','Port',''),0);
     strDataBaseName := IniFile.ReadString('DataBase','DataBaseName','');
     strServerName   := IniFile.ReadString('Server','ServerName','');

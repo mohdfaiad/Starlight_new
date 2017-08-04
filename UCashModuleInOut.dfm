@@ -175,6 +175,19 @@ object frmCashModuleInOut: TfrmCashModuleInOut
       TabOrder = 1
       Width = 109
     end
+    object rgOperType: TRadioGroup
+      Left = 419
+      Top = 2
+      Width = 210
+      Height = 73
+      Caption = ' '#1058#1080#1087' '#1086#1087#1077#1088#1072#1094#1080#1080' '
+      ItemIndex = 0
+      Items.Strings = (
+        #1055#1088#1080#1093#1086#1076' / '#1088#1072#1089#1093#1086#1076' '#1076#1077#1085#1077#1075
+        #1048#1085#1082#1072#1089#1072#1094#1080#1103)
+      TabOrder = 4
+      Visible = False
+    end
   end
   object pnlMain: TPanel
     Left = 0
@@ -295,8 +308,8 @@ object frmCashModuleInOut: TfrmCashModuleInOut
     end
   end
   object alSettings: TActionList
-    Left = 464
-    Top = 32
+    Left = 376
+    Top = 96
     object aEnter: TAction
       Caption = #1047#1072#1087#1080#1089#1072#1090#1100
       Enabled = False

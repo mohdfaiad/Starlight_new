@@ -143,6 +143,8 @@ type
     edPercent: TcxCurrencyEdit;
     curSum: TLabel;
     CDS_INVOICESUMM_OPT: TFloatField;
+    cxLabel8: TcxLabel;
+    edNumCheck: TcxTextEdit;
     procedure aCloseExecute(Sender: TObject);
     procedure aEnterExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -166,6 +168,9 @@ type
     procedure chbSendPhoneClick(Sender: TObject);
     procedure chbSendEmailClick(Sender: TObject);
     procedure edPercentPropertiesChange(Sender: TObject);
+    procedure edNumCheckEnter(Sender: TObject);
+    procedure edNumCheckKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -185,23 +190,7 @@ uses Udm;
 {$R *.dfm}
 
 function TfrmCashModuleEditor.MainFormShow(dt: TDate; cur_paydesk: integer) : boolean;
- var ddd: TDate;
 Begin
-{
- if not Assigned(frmCashModuleEditor) then
-  begin
-    frmCashModuleEditor := TfrmCashModuleEditor.Create(Application);
-    try
-      frmCashModuleEditor.cur_date := dt;
-      frmCashModuleEditor.ShowModal;
-      //LoadFormState(frmCashModule); //полож.окна
-    finally
-      nil;
-    end;
-  end
-  else
-   if (frmCashModuleEditor.WindowState = wsMinimized) then frmCashModuleEditor.WindowState := wsNormal;
-}
   Application.CreateForm(TfrmCashModuleEditor, frmCashModuleEditor);
   try
     with frmCashModuleEditor do
@@ -241,11 +230,12 @@ end;
 //  Записываем результат
 //
 procedure TfrmCashModuleEditor.aEnterExecute(Sender: TObject);
-var totalSum, summ: real;
+var totalSum, summ: currency;
 begin
   //pnlMain.Visible := false;
   if CDS_INVOICE.Active and (CDS_INVOICE.RecordCount > 0) then
   begin
+    summ := 0;
     try
       edINcash.PostEditValue;
       edINplastic.PostEditValue;
@@ -284,9 +274,10 @@ begin
       end;
 
       // Отрабатываем ЮрЛицо
+
       if (CDS_INVOICECHL.AsInteger = 0) and (
         (
-          (( totalSum < (summ - summ*edPercent.EditValue/100) ) and (summ >= 0))
+          (( totalSum < (summ - summ*VarToInt(edPercent.EditValue)/100) ) and (summ >= 0))
           or
           ((totalSum <> abs(summ)) and (summ < 0))
         ) and not chbPartialPayment.Checked
@@ -346,6 +337,113 @@ end;
 
 
 //
+// Вход в поле ввода т.чека
+//
+procedure TfrmCashModuleEditor.edNumCheckEnter(Sender: TObject);
+begin
+  edNumCheck.SelectAll;
+end;
+
+//
+// Поиск т.чека по номеру
+//
+procedure TfrmCashModuleEditor.edNumCheckKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    edNumCheck.PostEditValue;
+    edDate.PostEditValue;
+    if VarToStr(edNumCheck.EditValue) = '' then
+    begin
+      MessageBox(Handle, 'Введено пустое значение по номеру т.чека', 'Внимание!', MB_ICONWARNING);
+      exit;
+    end;
+
+    try
+      CDS_INVOICE.Close;
+      CDS_INVOICE.ParamByName('p_invoice').AsString   := VarToStr(edNumCheck.EditValue);
+      CDS_INVOICE.ParamByName('p_dep_id').AsInteger   := 1;
+      CDS_INVOICE.ParamByName('p_date').AsDate        := cur_date;
+      CDS_INVOICE.ParamByName('p_doc_type').AsInteger := 1;
+      CDS_INVOICE.Open;
+
+      if CDS_INVOICE.RecordCount > 1 then
+      begin
+        MessageBox(Handle, PChar('По т.чеку №'+VarToStr(edNumCheck.EditValue)+' найдено записей - '+IntToStr(CDS_INVOICE.RecordCount)), 'Внимание!', MB_ICONWARNING);
+        aEnter.Enabled := false;
+        exit;
+      end;
+      if CDS_INVOICE.RecordCount = 0 then
+      begin
+        MessageBox(Handle, PChar('По т.чеку №'+VarToStr(edNumCheck.EditValue)+' нет данных!'), 'Внимание!', MB_ICONWARNING);
+        aEnter.Enabled := false;
+        exit;
+      end;
+
+      // При ЮрЛ повторная подгрузка запрещена если нет признака частичной оплаты
+      if (CDS_INVOICECHL.AsInteger = 0) and (CDS_INVOICEBUH_ID.AsInteger > 0) and (CDS_INVOICEPARTIAL_PAYMENT.AsInteger = 0) then
+      begin
+        MessageBox(Handle, PChar('По т.чеку №'+VarToStr(edNumCheck.EditValue)+' уже выбивался чек!'+#10#13+'Дальнейшие действия невозможны'), 'Внимание!', MB_ICONWARNING);
+        aEnter.Enabled := false;
+        exit;
+      end;
+
+      Label10.Visible := (CDS_INVOICEPARTIAL_PAYMENT.AsInteger > 0);
+      DBText2.Visible := Label10.Visible;
+
+      // При счете фактуре, надо показать сумму по расчету сч.фактуры
+      //dbSumm.DataField := 'SUMM_OPT';
+
+
+      rbCHL.Checked     := true;
+      chbAsCHL.Checked  := true;
+
+      aEnter.Enabled            := true;
+      pnlTabs.Visible           := true;
+      pcMain.ActivePageIndex    := 0;
+
+      edINcash.Enabled     := (CDS_INVOICESUMM.AsInteger >= 0);
+      edINplastic.Enabled  := (CDS_INVOICESUMM.AsInteger >= 0);
+      edOUTcash.Enabled    := (CDS_INVOICESUMM.AsInteger < 0);
+      edOUTplastic.Enabled := (CDS_INVOICESUMM.AsInteger < 0);
+
+      edPercent.EditValue  := 0;
+      edPercent.Enabled    := false;
+
+      if (CDS_INVOICESUMM.AsInteger >= 0) then
+        edINcash.SetFocus
+      else
+      begin
+        // при возврате определяем предыдущую форму оплаты
+        if ( CDS_INVOICELAST_CASH_IN.AsInteger > 0 ) or ( CDS_INVOICELAST_CARD_IN.AsInteger > 0 ) then
+        begin
+          if ( CDS_INVOICELAST_CASH_IN.AsInteger > 0 ) then
+          begin
+            edOUTplastic.Enabled := false;
+            edOUTcash.SetFocus;
+          end
+          else
+          begin
+            edOUTcash.Enabled := false;
+            edOUTplastic.SetFocus;
+          end;
+        end else edOUTcash.SetFocus;
+      end;
+
+    except
+      on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
+    end;
+  end
+  else
+  begin
+    edNumNakl.EditValue    := '';
+    edNumInvoice.EditValue := '';
+  end;
+ end;
+
+
+//
 // Вход в поле ввода накладной
 //
 procedure TfrmCashModuleEditor.edNumInvoiceEnter(Sender: TObject);
@@ -362,6 +460,7 @@ begin
   if Key = VK_RETURN then
   begin
     edNumInvoice.PostEditValue;
+    edDate.PostEditValue;
     if VarToStr(edNumInvoice.EditValue) = '' then
     begin
       MessageBox(Handle, 'Введено пустое значение по номеру накладной', 'Внимание!', MB_ICONWARNING);
@@ -476,7 +575,12 @@ begin
     except
       on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
     end;
-  end else edNumNakl.EditValue := '';
+  end
+  else
+  begin
+    edNumNakl.EditValue    := '';
+    edNumCheck.EditValue   := '';
+  end;
 end;
 
 
@@ -498,6 +602,7 @@ begin
   if Key = VK_RETURN then
   begin
     edNumNakl.PostEditValue;
+    edDate.PostEditValue;
     if VarToStr(edNumNakl.EditValue) = '' then
     begin
       MessageBox(Handle, 'Введено пустое значение по номеру сч.фактуры', 'Внимание!', MB_ICONWARNING);
@@ -602,7 +707,12 @@ begin
     except
       on E: Exception do MessageBox(Handle, PChar(E.Message), 'Возникла ошибка', MB_ICONERROR);
     end;
-  end else edNumInvoice.EditValue := '';
+  end
+  else
+  begin
+    edNumInvoice.EditValue := '';
+    edNumCheck.EditValue   := '';
+  end;
 end;
 
 

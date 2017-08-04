@@ -3,7 +3,7 @@ object frmCashModule: TfrmCashModule
   Top = 0
   Caption = ' '#1050#1072#1089#1089#1086#1074#1099#1081' '#1084#1086#1076#1091#1083#1100
   ClientHeight = 530
-  ClientWidth = 852
+  ClientWidth = 1000
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object frmCashModule: TfrmCashModule
   object grCashModule: TcxGrid
     Left = 0
     Top = 56
-    Width = 852
+    Width = 1000
     Height = 448
     Align = alClient
     TabOrder = 4
@@ -45,6 +45,7 @@ object frmCashModule: TfrmCashModule
       NavigatorButtons.SaveBookmark.Visible = True
       NavigatorButtons.GotoBookmark.Visible = True
       NavigatorButtons.Filter.Visible = True
+      OnCustomDrawCell = grCashModuleVCustomDrawCell
       DataController.DataSource = DS_CASHMODULE
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <
@@ -280,6 +281,14 @@ object frmCashModule: TfrmCashModule
         Properties.Alignment.Horz = taCenter
         HeaderAlignmentHorz = taCenter
       end
+      object grCashModuleVPRINT_TYPE: TcxGridDBColumn
+        DataBinding.FieldName = 'PRINT_TYPE'
+        Visible = False
+      end
+      object grCashModuleVIS_PRINTED: TcxGridDBColumn
+        DataBinding.FieldName = 'IS_PRINTED'
+        Visible = False
+      end
     end
     object grCashModuleL: TcxGridLevel
       GridView = grCashModuleV
@@ -358,6 +367,10 @@ object frmCashModule: TfrmCashModule
         end
         item
           Visible = True
+          ItemName = 'btnDel'
+        end
+        item
+          Visible = True
           ItemName = 'btnEdit'
         end
         item
@@ -373,6 +386,10 @@ object frmCashModule: TfrmCashModule
           BeginGroup = True
           Visible = True
           ItemName = 'dxBarButton6'
+        end
+        item
+          Visible = True
+          ItemName = 'dxBarButton7'
         end
         item
           Visible = True
@@ -406,6 +423,11 @@ object frmCashModule: TfrmCashModule
         item
           Visible = True
           ItemName = 'btnHotKeys'
+        end
+        item
+          BeginGroup = True
+          Visible = True
+          ItemName = 'bstNotKKM'
         end
         item
           BeginGroup = True
@@ -451,7 +473,9 @@ object frmCashModule: TfrmCashModule
     end
     object btnDelete: TdxBarLargeButton
       Action = aCash
+      Caption = #1054#1087#1077#1088#1072#1094#1080#1103
       Category = 0
+      Hint = #1054#1087#1077#1088#1072#1094#1080#1103' '#1089' '#1076#1077#1085#1100#1075#1072#1084#1080
       LargeImageIndex = 15
       AutoGrayScale = False
     end
@@ -768,6 +792,27 @@ object frmCashModule: TfrmCashModule
       Hint = 'bstCashOperator'
       Visible = ivAlways
     end
+    object btnDel: TdxBarLargeButton
+      Action = aDel
+      Category = 0
+      LargeImageIndex = 6
+      AutoGrayScale = False
+    end
+    object bstNotKKM: TdxBarStatic
+      Caption = #1086#1087#1077#1088#1072#1094#1080#1103' '#1085#1077' '#1087#1088#1086#1074#1077#1076#1077#1085#1072' '#1095#1077#1088#1077#1079' '#1050#1050#1052
+      Category = 0
+      Hint = #1086#1087#1077#1088#1072#1094#1080#1103' '#1085#1077' '#1087#1088#1086#1074#1077#1076#1077#1085#1072' '#1095#1077#1088#1077#1079' '#1050#1050#1052
+      Style = stNotKKM
+      Visible = ivAlways
+      BorderStyle = sbsRaised
+    end
+    object dxBarButton7: TdxBarButton
+      Caption = 'New Button'
+      Category = 0
+      Hint = 'New Button'
+      Visible = ivNever
+      OnClick = dxBarButton7Click
+    end
   end
   object AlMain: TActionList
     Left = 608
@@ -803,17 +848,28 @@ object frmCashModule: TfrmCashModule
       ShortCut = 16499
       OnExecute = aExitExecute
     end
+    object aDel: TAction
+      Category = 'Main'
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnExecute = aDelExecute
+    end
   end
   object CDS_CASHMODULE: TOraQuery
+    SQLDelete.Strings = (
+      
+        'delete from CASHE_MODULE where CASHE_MODULE_ID = :old_CASHE_MODU' +
+        'LE_ID')
     SQLRefresh.Strings = (
-      'SELECT a.* from CURRENCY a'
-      'where a.ID = :old_ID')
+      
+        'select * from CASHE_MODULE where CASHE_MODULE_ID = :old_CASHE_MO' +
+        'DULE_ID')
     SQL.Strings = (
       'begin'
       
         '  CASH_PKG.GET_DATA_MODULE(:P_USER, :P_DATE_BEGIN, :P_DATE_END, ' +
         ':CURSOR_);'
       'end;')
+    AfterScroll = CDS_CASHMODULEAfterScroll
     Left = 512
     Top = 192
     ParamData = <
@@ -919,6 +975,12 @@ object frmCashModule: TfrmCashModule
     object CDS_CASHMODULEPERCENTAGE: TIntegerField
       FieldName = 'PERCENTAGE'
     end
+    object CDS_CASHMODULEPRINT_TYPE: TStringField
+      FieldName = 'PRINT_TYPE'
+    end
+    object CDS_CASHMODULEIS_PRINTED: TIntegerField
+      FieldName = 'IS_PRINTED'
+    end
   end
   object DS_CASHMODULE: TOraDataSource
     DataSet = CDS_CASHMODULE
@@ -1008,9 +1070,6 @@ object frmCashModule: TfrmCashModule
     Top = 304
   end
   object CDS_BILL: TOraQuery
-    SQLRefresh.Strings = (
-      'SELECT a.* from CURRENCY a'
-      'where a.ID = :old_ID')
     Session = dm.OraSession
     SQL.Strings = (
       'begin'
@@ -1058,6 +1117,9 @@ object frmCashModule: TfrmCashModule
     object CDS_BILLSUMM: TFloatField
       FieldName = 'SUMM'
     end
+    object CDS_BILLUNIT_SUMM: TFloatField
+      FieldName = 'UNIT_SUMM'
+    end
   end
   object DS_BILL: TOraDataSource
     DataSet = CDS_BILL
@@ -1092,6 +1154,13 @@ object frmCashModule: TfrmCashModule
     end
     object mnFields: TMenuItem
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1086#1083#1077#1081
+    end
+  end
+  object cxStyleRepository1: TcxStyleRepository
+    PixelsPerInch = 96
+    object stNotKKM: TcxStyle
+      AssignedValues = [svColor]
+      Color = 12058623
     end
   end
 end
